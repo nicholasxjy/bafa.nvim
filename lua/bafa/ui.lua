@@ -288,6 +288,7 @@ local function get_diagnostics_width(buffers)
 end
 
 local get_buffer_icon = function(buffer)
+  vim.print(buffer)
   if not has_devicons and not has_miniicons then
     return "", "Normal" -- fallback to default icon, when devicons is not available
   end
@@ -299,6 +300,8 @@ local get_buffer_icon = function(buffer)
     icon, icon_hl = Devicons.get_icon(buffer.name, buffer.extension, { default = true })
   elseif has_miniicons then
     icon, icon_hl = MiniIcons.get(buffer.name)
+    vim.print(icon)
+    vim.print(icon_hl)
   else
     icon, icon_hl = "", "Normal"
   end
