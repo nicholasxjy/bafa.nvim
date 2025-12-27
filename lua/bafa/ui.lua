@@ -309,9 +309,8 @@ local add_ft_icon_highlight = function(idx, buffer)
     return
   end
   local _, icon_hl_group = get_buffer_icon(buffer)
-  vim.print(icon_hl_group)
+  vim.print(vim.api.nvim_get_hl(0, { name = icon_hl_group }))
   local icon_hl = vim.api.nvim_get_hl(0, { name = icon_hl_group }).fg
-  vim.print(icon_hl)
   local hl_group = "BafaIcon" .. tostring(idx)
   vim.api.nvim_set_hl(0, hl_group, { fg = string.format("#%06x", icon_hl) })
   vim.api.nvim_buf_set_extmark(BAFA_BUF_ID, BAFA_NS_ID, idx - 1, 2, {
