@@ -6,7 +6,8 @@ local Autocmds = require("bafa.utils.autocmds")
 local State = require("bafa.utils.state")
 local UiUtils = require("bafa.utils.ui")
 local Types = require("bafa.types")
-local _, Devicons = pcall(require, "nvim-web-devicons")
+local has_devicons, Devicons = pcall(require, "nvim-web-devicons")
+local has_miniicons, MiniIcons = pcall(require, "mini.icons")
 
 local BAFA_NS_ID = vim.api.nvim_create_namespace("bafa.nvim")
 
@@ -287,13 +288,20 @@ local function get_diagnostics_width(buffers)
 end
 
 local get_buffer_icon = function(buffer)
-  if Devicons == nil then
+  if not has_devicons and not has_miniicons then
     return "", "Normal" -- fallback to default icon, when devicons is not available
   end
   if not buffer or not buffer.name then
     return "", "Normal"
   end
-  local icon, icon_hl = Devicons.get_icon(buffer.name, buffer.extension, { default = true })
+  local icon, icon_hl
+  if has_devicons then
+    icon, icon_hl = Devicons.get_icon(buffer.name, buffer.extension, { default = true })
+  elseif has_miniicons then
+    icon, icon_hl = MiniIcons.get(buffer.name)
+  else
+    icon, icon_hl = "", "Normal"
+  end
   return icon, icon_hl
 end
 
@@ -309,7 +317,6 @@ local add_ft_icon_highlight = function(idx, buffer)
     return
   end
   local _, icon_hl_group = get_buffer_icon(buffer)
-  vim.print(vim.api.nvim_get_hl(0, { name = icon_hl_group }))
   local icon_hl = vim.api.nvim_get_hl(0, { name = icon_hl_group }).fg
   local hl_group = "BafaIcon" .. tostring(idx)
   vim.api.nvim_set_hl(0, hl_group, { fg = string.format("#%06x", icon_hl) })
